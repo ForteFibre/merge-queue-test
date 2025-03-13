@@ -1,0 +1,7 @@
+.cache
+.vscode/*
+!.vscode/cspell.json
+build
+install
+log
+__pycache__/
