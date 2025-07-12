@@ -20,7 +20,24 @@ find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
 # muParser
-include(parameter_expression-extras.cmake)
+find_package(muparser QUIET)
+
+if(muparser_FOUND)
+  message(STATUS "Using system MuParser")
+
+  # Add uppercase alias if only the lowercase target is defined
+  if(NOT TARGET MuParser::MuParser)
+    add_library(MuParser::MuParser ALIAS muparser::muparser)
+  endif()
+else()
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(MuParser GLOBAL IMPORTED_TARGET muparser)
+
+  if(MuParser_FOUND)
+    message(STATUS "Using system MuParser (via pkg-config)")
+    add_library(MuParser::MuParser ALIAS PkgConfig::MuParser)
+  endif()
+endif()
 
 include_directories(SYSTEM ${muparser_INCLUDE_DIRS})
 
@@ -35,10 +52,9 @@ file(
 
 ament_auto_add_library(${PROJECT_NAME} SHARED ${sources})
 
-target_link_libraries(${PROJECT_NAME} muparser::muparser)
+target_link_libraries(${PROJECT_NAME} MuParser::MuParser)
 
 ament_export_libraries(${PROJECT_NAME})
-ament_export_dependencies(muparser)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -58,7 +74,4 @@ if(BUILD_TESTING)
   target_link_libraries(${PROJECT_NAME}_test ${PROJECT_NAME})
 endif()
 
-ament_auto_package(
-  CONFIG_EXTRAS "parameter_expression-extras.cmake"
-  INSTALL_TO_SHARE cmake
-)
+ament_auto_package()
