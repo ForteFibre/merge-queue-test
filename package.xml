@@ -5,7 +5,7 @@
   <version>0.0.1</version>
   <description>Using mathematical expression in ROS 2 parameter</description>
   <maintainer email="f0reach@f0reach.me">f0reachARR</maintainer>
-  <license>MIT</license>
+  <license>Apache License 2.0</license>
 
   <depend>rclcpp</depend>
   <depend>muparser</depend>

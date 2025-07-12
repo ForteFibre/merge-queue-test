@@ -128,7 +128,7 @@ if (!result.successful) {
 
 ## License
 
-This package is licensed under the MIT License.
+This package is licensed under the Apache License 2.0.
 
 ## Contributing
 
