@@ -12,7 +12,11 @@ on:
       - reopened
       - synchronize
       - unlabeled
-concurrency: release
+      - closed
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -106,7 +110,7 @@ jobs:
           echo "new_version=$(catkin_package_version)" >> $GITHUB_OUTPUT
 
       - name: Commit changes
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && steps.old_version.outputs.old_version != steps.new_version.outputs.new_version
         run: |
           git add .
           git commit -m "Bump from version ${{ steps.old_version.outputs.old_version }} to version ${{ steps.new_version.outputs.new_version }}"
@@ -136,7 +140,7 @@ jobs:
           run: cat release_description.txt
 
       - name: Create a GitHub release
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && steps.old_version.outputs.old_version != steps.new_version.outputs.new_version
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.new_version.outputs.new_version }}
