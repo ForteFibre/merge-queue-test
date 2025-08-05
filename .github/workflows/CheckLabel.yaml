@@ -17,7 +17,9 @@ jobs:
       - name: Print event and payload
         run: |
           echo "Event: ${{ github.event_name }}"
-          echo 'Payload: ${{ toJson(github.event) }}'
+          echo "Payload: $GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github.event) }}
       - name: Check required label
         if:
           (!contains(github.event.pull_request.labels.*.name, 'bump patch')) &&

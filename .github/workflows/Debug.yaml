@@ -15,4 +15,6 @@ jobs:
       - name: Print event and payload
         run: |
           echo "Event: ${{ github.event_name }}"
-          echo 'Payload: ${{ toJson(github.event) }}'
+          echo "Payload: $GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github.event) }}
