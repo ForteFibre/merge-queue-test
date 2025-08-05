@@ -59,19 +59,11 @@ jobs:
         env:
           PR_CONTENT: ${{ toJson(steps.pull-request.outputs) }}
 
-      - name: Store PR body (event)
-        id: pr_body_event
-        if: github.event_name == 'pull_request'
-        run: |
-          echo "pr_body=$PR" >> $GITHUB_OUTPUT
-        env:
-          PR: ${{ toJson(toJson(github.event.pull_request)) }}
-
       - name: Store PR body
         id: pr_body
         run: echo "pr_body=$PR" >> $GITHUB_OUTPUT
         env:
-          PR: ${{ steps.pull-request.outputs.pr || steps.pr_body_event.outputs.pr_body || '{}' }}
+          PR: ${{ steps.pull-request.outputs.pr || '{}' }}
 
       - name: Install catkin pkg
         run: apt update && apt install -y python3-catkin-pkg git curl
@@ -97,21 +89,21 @@ jobs:
           echo "old_version=$(catkin_package_version)" >> $GITHUB_OUTPUT
 
       - name: Bump patch version
-        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump patch'))
+        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump patch')) || (contains(github.event.pull_request.labels.*.name, 'bump patch'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump patch
           catkin_package_version --bump patch
 
       - name: Bump minor version
-        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump minor'))
+        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump minor')) || (contains(github.event.pull_request.labels.*.name, 'bump minor'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump minor
           catkin_package_version --bump minor
 
       - name: Bump major version
-        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump major'))
+        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump major')) || (contains(github.event.pull_request.labels.*.name, 'bump major'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump major
