@@ -38,7 +38,7 @@ jobs:
       - name: Print event and payload
         run: |
           echo "Event: ${{ github.event_name }}"
-          echo "Payload: ${{ toJson(github.event) }}"
+          echo 'Payload: ${{ toJson(github.event) }}'
 
       - uses: actions/create-github-app-token@v1
         id: app-token

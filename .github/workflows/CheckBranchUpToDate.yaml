@@ -16,7 +16,7 @@ jobs:
       - name: Print event and payload
         run: |
           echo "Event: ${{ github.event_name }}"
-          echo "Payload: ${{ toJson(github.event) }}"
+          echo 'Payload: ${{ toJson(github.event) }}'
 
       - name: checkout
         uses: actions/checkout@v4
