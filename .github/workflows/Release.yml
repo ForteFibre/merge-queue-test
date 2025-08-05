@@ -55,11 +55,15 @@ jobs:
 
       - name: Show pr
         run: |
-          echo 'Pull Request: ${{ toJson(steps.pull-request.outputs) }}'
+          echo "Pull Request: $PR_CONTENT"
+        env:
+          PR_CONTENT: ${{ toJson(steps.pull-request.outputs) }}
 
       - name: Store PR body
         id: pr_body
-        run: echo 'pr_body=${{ steps.pull-request.outputs.pr || '{}' }}' >> $GITHUB_OUTPUT
+        run: echo "pr_body=$PR" >> $GITHUB_OUTPUT
+        env:
+          PR: ${{ steps.pull-request.outputs.pr || '{}' }}
 
       - name: Install catkin pkg
         run: apt update && apt install -y python3-catkin-pkg git curl
