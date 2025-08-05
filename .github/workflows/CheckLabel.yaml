@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
+      - name: Print event and payload
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Payload: ${{ toJson(github.event) }}"
       - name: Check required label
         if:
           (!contains(github.event.pull_request.labels.*.name, 'bump patch')) &&
