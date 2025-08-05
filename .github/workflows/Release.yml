@@ -63,11 +63,9 @@ jobs:
         id: pr_body_event
         if: github.event_name == 'pull_request'
         run: |
-          echo "pr_body<<EOM" >> $GITHUB_OUTPUT
-          echo "$PR" >> $GITHUB_OUTPUT
-          echo "EOM" >> $GITHUB_OUTPUT
+          echo "pr_body=$PR" >> $GITHUB_OUTPUT
         env:
-          PR: ${{ toJson(github.event.pull_request) }}
+          PR: ${{ toJson(toJson(github.event.pull_request)) }}
 
       - name: Store PR body
         id: pr_body
