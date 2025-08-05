@@ -51,6 +51,11 @@ jobs:
       - name: Show pr
         run: |
           echo 'Pull Request: ${{ toJson(steps.pull-request.outputs) }}'
+
+      - name: Store PR body
+        id: pr_body
+        run: echo 'pr_body=${{ steps.pull-request.outputs.pr || '{}' }}' >> $GITHUB_OUTPUT
+
       - name: Install catkin pkg
         run: apt update && apt install -y python3-catkin-pkg git curl
 
@@ -75,21 +80,21 @@ jobs:
           echo "old_version=$(catkin_package_version)" >> $GITHUB_OUTPUT
 
       - name: Bump patch version
-        if: steps.pull-request.outputs.pr_found && (contains(fromJson(steps.pull-request.outputs.pr).labels.*.name, 'bump patch'))
+        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump patch'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump patch
           catkin_package_version --bump patch
 
       - name: Bump minor version
-        if: steps.pull-request.outputs.pr_found && (contains(fromJson(steps.pull-request.outputs.pr).labels.*.name, 'bump minor'))
+        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump minor'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump minor
           catkin_package_version --bump minor
 
       - name: Bump major version
-        if: steps.pull-request.outputs.pr_found && (contains(fromJson(steps.pull-request.outputs.pr).labels.*.name, 'bump major'))
+        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump major'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump major
@@ -111,13 +116,13 @@ jobs:
         id: linked_issues
         uses: hossainemruz/linked-issues@main
         with:
-          pr_url: ${{fromJson(steps.pull-request.outputs.pr).html_url || github.event.pull_request.html_url}}
+          pr_url: ${{fromJson(steps.pr_body.outputs.pr_body).html_url || github.event.pull_request.html_url}}
           format: ExternalIssueRef
         continue-on-error: true
 
       - name: Update release description
         env:
-          PULL_REQUEST_BODY: ${{ fromJson(steps.pull-request.outputs.pr).body || github.event.pull_request.body }}
+          PULL_REQUEST_BODY: ${{ fromJson(steps.pr_body.outputs.pr_body).body || github.event.pull_request.body }}
         run: |
           echo "$PULL_REQUEST_BODY" >> release_description.txt
           echo "" >> release_description.txt
