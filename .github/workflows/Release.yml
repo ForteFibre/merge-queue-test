@@ -46,6 +46,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github.event) }}
       - uses: actions/create-github-app-token@v1
         id: app-token
+        if: github.event_name == 'push'
         with:
           app-id: ${{ secrets.GH_APP_ID }}
           private-key: ${{ secrets.GH_SECRET_KEY }}
@@ -74,13 +75,13 @@ jobs:
           ref: main
           fetch-depth: 0
           fetch-tags: true
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token || github.token }}
 
       - name: Setup git
         run: |
           git config --global user.name  "Release Bot"
           git config --global user.email "action@github.com"
-          git config --global --add safe.directory /__w/merge-queue-test/merge-queue-test
+          git config --global --add safe.directory $GITHUB_WORKSPACE
           git config pull.rebase false
 
       - name: Get old version
@@ -89,21 +90,21 @@ jobs:
           echo "old_version=$(catkin_package_version)" >> $GITHUB_OUTPUT
 
       - name: Bump patch version
-        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump patch')) || (contains(github.event.pull_request.labels.*.name, 'bump patch'))
+        if: (contains(steps.pull-request.outputs.pr_labels, 'bump patch')) || (contains(github.event.pull_request.labels.*.name, 'bump patch'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump patch
           catkin_package_version --bump patch
 
       - name: Bump minor version
-        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump minor')) || (contains(github.event.pull_request.labels.*.name, 'bump minor'))
+        if: (contains(steps.pull-request.outputs.pr_labels, 'bump minor')) || (contains(github.event.pull_request.labels.*.name, 'bump minor'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump minor
           catkin_package_version --bump minor
 
       - name: Bump major version
-        if: (contains(fromJson(steps.pr_body.outputs.pr_body).labels.*.name, 'bump major')) || (contains(github.event.pull_request.labels.*.name, 'bump major'))
+        if: (contains(steps.pull-request.outputs.pr_labels, 'bump major')) || (contains(github.event.pull_request.labels.*.name, 'bump major'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump major
