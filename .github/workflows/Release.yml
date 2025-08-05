@@ -75,21 +75,21 @@ jobs:
           echo "old_version=$(catkin_package_version)" >> $GITHUB_OUTPUT
 
       - name: Bump patch version
-        if: (contains(steps.pull-request.outputs.pr.labels.*.name, 'bump patch'))
+        if: steps.pull-request.outputs.pr_found && (contains(fromJson(steps.pull-request.outputs.pr).labels.*.name, 'bump patch'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump patch
           catkin_package_version --bump patch
 
       - name: Bump minor version
-        if: (contains(steps.pull-request.outputs.pr.labels.*.name, 'bump minor'))
+        if: steps.pull-request.outputs.pr_found && (contains(fromJson(steps.pull-request.outputs.pr).labels.*.name, 'bump minor'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump minor
           catkin_package_version --bump minor
 
       - name: Bump major version
-        if: (contains(steps.pull-request.outputs.pr.labels.*.name, 'bump major'))
+        if: steps.pull-request.outputs.pr_found && (contains(fromJson(steps.pull-request.outputs.pr).labels.*.name, 'bump major'))
         run: |
           catkin_generate_changelog -y
           catkin_tag_changelog --bump major
@@ -111,13 +111,13 @@ jobs:
         id: linked_issues
         uses: hossainemruz/linked-issues@main
         with:
-          pr_url: ${{steps.pull-request.outputs.pr.html_url}}
+          pr_url: ${{fromJson(steps.pull-request.outputs.pr).html_url || github.event.pull_request.html_url}}
           format: ExternalIssueRef
         continue-on-error: true
 
       - name: Update release description
         env:
-          PULL_REQUEST_BODY: ${{ steps.pull-request.outputs.pr.body }}
+          PULL_REQUEST_BODY: ${{ fromJson(steps.pull-request.outputs.pr).body || github.event.pull_request.body }}
         run: |
           echo "$PULL_REQUEST_BODY" >> release_description.txt
           echo "" >> release_description.txt
