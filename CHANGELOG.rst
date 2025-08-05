@@ -2,6 +2,15 @@
 Changelog for package parameter_expression
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.1.2 (2025-08-05)
+------------------
+* Merge pull request `#17 <https://github.com/ForteFibre/merge-queue-test/issues/17>`_ from ForteFibre/test10
+  Test10
+* Merge branch 'main' into test10
+* Use short hand
+* Fix small issue
+* Contributors: f0reachARR, ぐるぐる
+
 0.1.1 (2025-08-05)
 ------------------
 * Merge pull request `#16 <https://github.com/ForteFibre/merge-queue-test/issues/16>`_ from ForteFibre/test9
