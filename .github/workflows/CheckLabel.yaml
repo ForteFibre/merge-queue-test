@@ -6,6 +6,7 @@ on:
     types:
       - labeled
       - unlabeled
+      - synchronize
 
 jobs:
   check_label:
