@@ -67,9 +67,6 @@ jobs:
         run: |
           echo "old_version=$(catkin_package_version)" >> $GITHUB_OUTPUT
 
-      - name: Pull head branch
-        run: git pull ${{ steps.pull-request.outputs.pr.head.repo.clone_url }} ${{ github.head_ref }}
-
       - name: Bump patch version
         if: (contains(steps.pull-request.outputs.pr.labels.*.name, 'bump patch'))
         run: |
