@@ -7,7 +7,7 @@ on:
       - labeled
       - unlabeled
       - synchronize
-
+      - opened
 jobs:
   check_label:
     name: Check label
