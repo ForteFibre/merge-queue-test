@@ -28,9 +28,3 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: Build and test
-        uses: ros-tooling/action-ros-ci@v0.4
-        with:
-          package-name: parameter_expression
-          target-ros2-distro: ${{ matrix.target-ros2-distro }}
