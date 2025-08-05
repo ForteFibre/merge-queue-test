@@ -59,11 +59,18 @@ jobs:
         env:
           PR_CONTENT: ${{ toJson(steps.pull-request.outputs) }}
 
+      - name: Store PR body (event)
+        id: pr_body_event
+        if: github.event_name == 'pull_request'
+        run: echo "pr_body=$PR" >> $GITHUB_OUTPUT
+        env:
+          PR: ${{ toJson(github.event.pull_request) }}
+
       - name: Store PR body
         id: pr_body
         run: echo "pr_body=$PR" >> $GITHUB_OUTPUT
         env:
-          PR: ${{ steps.pull-request.outputs.pr || '{}' }}
+          PR: ${{ steps.pull-request.outputs.pr || steps.pr_body_event.outputs.pr_body || '{}' }}
 
       - name: Install catkin pkg
         run: apt update && apt install -y python3-catkin-pkg git curl
