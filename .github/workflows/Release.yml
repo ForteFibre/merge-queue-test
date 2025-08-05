@@ -35,6 +35,11 @@ jobs:
     outputs:
       new_version: ${{ steps.new_version.outputs.new_version }}
     steps:
+      - name: Print event and payload
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Payload: ${{ toJson(github.event) }}"
+
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
@@ -66,9 +71,6 @@ jobs:
         id: old_version
         run: |
           echo "old_version=$(catkin_package_version)" >> $GITHUB_OUTPUT
-
-      - name: Pull head branch
-        run: git pull ${{ steps.pull-request.outputs.pr.head.repo.clone_url }} ${{ github.head_ref }}
 
       - name: Bump patch version
         if: (contains(steps.pull-request.outputs.pr.labels.*.name, 'bump patch'))
